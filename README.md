@@ -7,8 +7,8 @@ Contributions welcome.
 
 ## Qat
 
-Here are the supported operations of Qat equations.
-For the proof of concept, only English will be supported, but I'll try to design for arbitrary alphabetic scripts (Extended Latin, Cyrillic, Greek, Japanese Kana).
+Here are the supported operations of Qat expressions.
+For the proof of concept, only English will be supported.
 
 | Task | Pattern | Results | Supported? |
 |------|---------|---------|------------|
@@ -43,9 +43,11 @@ For the proof of concept, only English will be supported, but I'll try to design
 
 ## License
 
-Licensed under either of
+This library implementing the Qat specification is licensed under either of
 
 * Apache License, Version 2.0, ([LICENSE-APACHE](LICENSE-APACHE) or <http://www.apache.org/licenses/LICENSE-2.0>)
 * MIT license ([LICENSE-MIT](LICENSE-MIT) or <http://opensource.org/licenses/MIT>)
 
 at your option.
+
+The specification defining the Qat language belongs to Dr. Mark Owen (<https://www.quinapalus.com/>) and is licensed under the Lesser General Public License For Linguistic Resources (LGPL-LR or <http://infolingu.univ-mlv.fr/DonneesLinguistiques/Lexiques-Grammaires/lgpllr.html>).
