@@ -17,7 +17,7 @@ enum Token {
 
 struct ParseState {
     make_set: bool,
-    set: Vec<char>
+    set: Vec<char>,
 }
 
 pub struct Pattern {
@@ -40,9 +40,12 @@ impl<'a> Pattern {
                     state.make_set = true;
                     state.set = Vec::new();
                     Ok(Token::Empty)
-                },
+                }
                 ('[', true) => Err(ParsingError::SyntaxError(i, "set opened twice".to_owned())),
-                (']', false) => Err(ParsingError::SyntaxError(i, "set closed before open".to_owned())),
+                (']', false) => Err(ParsingError::SyntaxError(
+                    i,
+                    "set closed before open".to_owned(),
+                )),
                 (']', true) => {
                     let out = Ok(Token::Set(state.set.clone()));
                     state.make_set = false;
@@ -56,10 +59,7 @@ impl<'a> Pattern {
                 }
                 _ => Err(ParsingError::InvalidTokenError(i, c)),
             })
-            .filter(|t| match t {
-                Ok(Token::Empty) => false,
-                _ => true
-            })
+            .filter(|t| !matches!(t, Ok(Token::Empty)))
             .collect::<Result<Vec<Token>, ParsingError>>()?;
         Ok(Self { tokens })
     }
