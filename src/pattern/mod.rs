@@ -1,8 +1,6 @@
 pub mod parsing;
 
 use crate::pattern::parsing::{ParsingError, Token};
-use core::slice::Iter;
-use std::iter::Peekable;
 
 enum Node {
     Any,
@@ -16,8 +14,10 @@ pub struct Pattern {
 }
 
 impl<'a, 'b> Pattern {
-    // TODO fix typing
-    fn collect_set(tokens: &'a mut Peekable<Iter<Token>>) -> Result<Vec<char>, ParsingError<'b>> {
+    fn collect_set<I>(tokens: &mut I) -> Result<Vec<char>, ParsingError<'b>>
+    where
+        I: Iterator<Item = &'a Token>,
+    {
         let mut set = vec![];
         for token in tokens.by_ref() {
             match token {
