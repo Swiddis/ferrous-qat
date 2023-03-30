@@ -2,10 +2,10 @@ use thiserror::Error;
 
 #[derive(Debug, Error, PartialEq)]
 pub enum ParsingError<'a> {
-    #[error("invalid token at index {0}: {1}")]
-    InvalidTokenError(usize, char),
-    #[error("syntax error at index {0}: {1}")]
-    SyntaxError(usize, &'a str),
+    #[error("invalid token: {0}")]
+    InvalidTokenError(char),
+    #[error("syntax error: {0}")]
+    SyntaxError(&'a str),
 }
 
 #[derive(Debug, PartialEq)]
@@ -20,20 +20,20 @@ pub enum Token {
 impl Token {
     pub fn lexify(source: &str) -> Result<Vec<Self>, ParsingError> {
         let mut tokens = Vec::new();
-        let mut source = source.chars().enumerate().peekable();
-        while let Some((idx, curr)) = source.next() {
+        let mut source = source.chars().peekable();
+        while let Some(curr) = source.next() {
             match curr {
                 'a'..='z' => tokens.push(Self::Letter(curr)),
                 '.' => tokens.push(Self::AnyLetter),
                 '[' => match source.peek() {
-                    Some(&(_, '!')) => {
+                    Some(&'!') => {
                         tokens.push(Self::BeginNegSet);
                         source.next();
                     }
                     _ => tokens.push(Self::BeginSet),
                 },
                 ']' => tokens.push(Self::EndSet),
-                _ => return Err(ParsingError::InvalidTokenError(idx, curr)),
+                _ => return Err(ParsingError::InvalidTokenError(curr)),
             }
         }
         Ok(tokens)

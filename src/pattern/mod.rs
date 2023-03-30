@@ -24,11 +24,11 @@ impl<'a, 'b> Pattern {
                 Token::Letter(c) => set.push(*c),
                 Token::EndSet => return Ok(set),
                 _ => {
-                    return Err(ParsingError::SyntaxError(0, "illegal set element"));
+                    return Err(ParsingError::SyntaxError("illegal set element"));
                 }
             }
         }
-        Err(ParsingError::SyntaxError(0, "set not closed"))
+        Err(ParsingError::SyntaxError("set not closed"))
     }
 
     pub fn new(source: &str) -> Result<Self, ParsingError> {
@@ -42,7 +42,7 @@ impl<'a, 'b> Pattern {
                 Token::BeginSet => nodes.push(Node::Set(Self::collect_set(&mut tokens)?)),
                 Token::BeginNegSet => nodes.push(Node::NegSet(Self::collect_set(&mut tokens)?)),
                 Token::EndSet => {
-                    return Err(ParsingError::SyntaxError(0, "closed set without open"));
+                    return Err(ParsingError::SyntaxError("closed set without open"));
                 }
             }
         }
