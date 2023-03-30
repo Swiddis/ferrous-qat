@@ -1,17 +1,29 @@
 use criterion::*;
 use wordqat::Pattern;
 
-fn letter_dot_benchmark(c: &mut Criterion) {
+fn basic_dot_benchmark(c: &mut Criterion) {
     let wordlist = ["lone", "love", "word", "door", "dome", "lint", "leftie"];
+    let pattern = Pattern::new("l..e").unwrap();
     let mut i = 0;
-    let pattern = Pattern::new("l..e");
-    c.bench_function("letter-dot-1", |b| {
+    c.bench_function("dot-1", |b| {
         b.iter(|| {
-            pattern.matches(black_box(wordlist[i]));
+            black_box(pattern.matches(wordlist[i]));
             i = (i + 1) % wordlist.len();
         })
     });
 }
 
-criterion_group!(benches, letter_dot_benchmark);
+fn basic_set_benchmark(c: &mut Criterion) {
+    let wordlist = ["anise", "avize", "alone", "elide", "risen"];
+    let pattern = Pattern::new("..i[sz]e").unwrap();
+    let mut i = 0;
+    c.bench_function("set-1", |b| {
+        b.iter(|| {
+            black_box(pattern.matches(wordlist[i]));
+            i = (i + 1) % wordlist.len();
+        })
+    });
+}
+
+criterion_group!(benches, basic_dot_benchmark, basic_set_benchmark);
 criterion_main!(benches);

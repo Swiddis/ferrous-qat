@@ -13,7 +13,7 @@ For the proof of concept, only English will be supported.
 | Task | Pattern | Results | Supported? |
 |------|---------|---------|------------|
 | Complete a crossword entry | `l.......v` | leitmotiv lermontov | Yes |
-| Complete a crossword entry with alternatives | `..i[sz]e` | anise arise avise avize baize ... | No |
+| Complete a crossword entry with alternatives | `..i[sz]e` | anise arise avise avize baize ... | Yes |
 | Match ranges of letters | `[l-p].[m-r].[w-z]` | lammy lanky lapaz lardy larky larry lenny limax ... | No |
 | Match disallowing certain letters | `....i[!stz]e` | abusive acarine acquire adenine affaire airline airmile airside ... | No |
 | Match consonants and vowels | `#@#@#@#@#@#@#@` | pararosaniline recapitulative rehabilitative supererogative verisimilitude | No |
