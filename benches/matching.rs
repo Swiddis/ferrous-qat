@@ -1,5 +1,5 @@
 use criterion::*;
-use wordqat::Pattern;
+use wordqat::pattern::Pattern;
 
 fn basic_dot_benchmark(c: &mut Criterion) {
     let wordlist = ["lone", "love", "word", "door", "dome", "lint", "leftie"];
