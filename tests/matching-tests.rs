@@ -8,7 +8,7 @@ fn test_matches_crossword() {
         .into_iter()
         .filter(|w| pattern.matches(w))
         .collect();
-    assert_eq!(result, vec!["lone", "love"])
+    assert_eq!(result, vec!["lone", "love"]);
 }
 
 #[test]
@@ -19,7 +19,7 @@ fn test_matches_set() {
         .into_iter()
         .filter(|w| pattern.matches(w))
         .collect();
-    assert_eq!(result, vec!["anise", "avize"])
+    assert_eq!(result, vec!["anise", "avize"]);
 }
 
 #[test]
@@ -31,4 +31,26 @@ fn test_matches_negset() {
         .filter(|w| pattern.matches(w))
         .collect();
     assert_eq!(result, vec!["alice", "taire"]);
+}
+
+#[test]
+fn test_matches_vowels() {
+    let wordlist = ["wine", "wins", "wise", "wore", "worn"];
+    let pattern = Pattern::new("w@.@").unwrap();
+    let result: Vec<&str> = wordlist
+        .into_iter()
+        .filter(|w| pattern.matches(w))
+        .collect();
+    assert_eq!(result, vec!["wine", "wise", "wore"]);
+}
+
+#[test]
+fn test_matches_consonants() {
+    let wordlist = ["wine", "wins", "wise", "wore", "worn"];
+    let pattern = Pattern::new("w..#").unwrap();
+    let result: Vec<&str> = wordlist
+        .into_iter()
+        .filter(|w| pattern.matches(w))
+        .collect();
+    assert_eq!(result, vec!["wins", "worn"]);
 }

@@ -15,6 +15,8 @@ pub enum Token {
     BeginSet,
     BeginNegSet,
     EndSet,
+    AnyVowel,
+    AnyConsonant,
 }
 
 impl Token {
@@ -33,6 +35,8 @@ impl Token {
                     _ => tokens.push(Self::BeginSet),
                 },
                 ']' => tokens.push(Self::EndSet),
+                '@' => tokens.push(Self::AnyVowel),
+                '#' => tokens.push(Self::AnyConsonant),
                 _ => return Err(ParsingError::InvalidTokenError(curr)),
             }
         }
@@ -48,7 +52,7 @@ mod test {
     fn test_lexify_letters() {
         use Token::*;
         let result = Token::lexify("abc").unwrap();
-        assert_eq!(result, vec![Letter('a'), Letter('b'), Letter('c')])
+        assert_eq!(result, vec![Letter('a'), Letter('b'), Letter('c')]);
     }
 
     #[test]
@@ -63,5 +67,19 @@ mod test {
         use Token::*;
         let result = Token::lexify("[!ab]").unwrap();
         assert_eq!(result, vec![BeginNegSet, Letter('a'), Letter('b'), EndSet]);
+    }
+
+    #[test]
+    fn test_lexify_vowels() {
+        use Token::*;
+        let result = Token::lexify("a@b").unwrap();
+        assert_eq!(result, vec![Letter('a'), AnyVowel, Letter('b')]);
+    }
+
+    #[test]
+    fn test_lexify_consonants() {
+        use Token::*;
+        let result = Token::lexify("a#b").unwrap();
+        assert_eq!(result, vec![Letter('a'), AnyConsonant, Letter('b')]);
     }
 }
