@@ -7,6 +7,8 @@ enum Node {
     Char(char),
     Set(Vec<char>),
     NegSet(Vec<char>),
+    AnyVow,
+    AnyCon,
 }
 
 pub struct Pattern {
@@ -39,6 +41,8 @@ impl<'a, 'b> Pattern {
             match token {
                 Token::Letter(c) => nodes.push(Node::Char(*c)),
                 Token::AnyLetter => nodes.push(Node::Any),
+                Token::AnyVowel => nodes.push(Node::AnyVow),
+                Token::AnyConsonant => nodes.push(Node::AnyCon),
                 Token::BeginSet => nodes.push(Node::Set(Self::collect_set(&mut tokens)?)),
                 Token::BeginNegSet => nodes.push(Node::NegSet(Self::collect_set(&mut tokens)?)),
                 Token::EndSet => {
@@ -58,6 +62,18 @@ impl<'a, 'b> Pattern {
             Node::Char(c) => *c == w,
             Node::Set(s) => s.contains(&w),
             Node::NegSet(s) => !s.contains(&w),
+            Node::AnyVow => {
+                let vowels = vec!['a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U'];
+                vowels.contains(&w)
+            }
+            Node::AnyCon => {
+                let consonants = vec![
+                    'b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p', 'q', 'r', 's', 't',
+                    'v', 'w', 'x', 'y', 'z', 'B', 'C', 'D', 'F', 'G', 'H', 'J', 'J', 'L', 'M', 'N',
+                    'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'X', 'Y', 'Z',
+                ];
+                consonants.contains(&w)
+            }
         })
     }
 }
