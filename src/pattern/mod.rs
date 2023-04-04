@@ -1,12 +1,14 @@
+pub mod charset;
 pub mod parsing;
 
-use crate::pattern::parsing::{ParsingError, Token};
+use self::charset::{CharSet, EnCharSet};
+use self::parsing::{ParsingError, Token};
 
 enum Node {
     Any,
     Char(char),
-    Set(Vec<char>),
-    NegSet(Vec<char>),
+    Set(EnCharSet),
+    NegSet(EnCharSet),
 }
 
 pub struct Pattern {
@@ -14,14 +16,14 @@ pub struct Pattern {
 }
 
 impl<'a, 'b> Pattern {
-    fn collect_set<I>(tokens: &mut I) -> Result<Vec<char>, ParsingError<'b>>
+    fn collect_set<I>(tokens: &mut I) -> Result<EnCharSet, ParsingError<'b>>
     where
         I: Iterator<Item = &'a Token>,
     {
-        let mut set = vec![];
+        let mut set = EnCharSet::new();
         for token in tokens.by_ref() {
             match token {
-                Token::Letter(c) => set.push(*c),
+                Token::Letter(c) => set.insert(*c),
                 Token::EndSet => return Ok(set),
                 _ => {
                     return Err(ParsingError::SyntaxError("illegal set element"));
@@ -56,8 +58,8 @@ impl<'a, 'b> Pattern {
         self.nodes.iter().zip(word.chars()).all(|(n, w)| match n {
             Node::Any => true,
             Node::Char(c) => *c == w,
-            Node::Set(s) => s.contains(&w),
-            Node::NegSet(s) => !s.contains(&w),
+            Node::Set(s) => s.contains(w),
+            Node::NegSet(s) => !s.contains(w),
         })
     }
 }
