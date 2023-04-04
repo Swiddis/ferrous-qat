@@ -48,7 +48,7 @@ For the proof of concept, only English will be supported.
 
 Contributions are welcome.
 Unstable development is taking place on the `dev` branch, please base PRs off of it.
-Merging with main will be done for version bumps, the first bump is planned when all of the above expressions are supported.
+Merging with main will be done for completed milestones.
 
 Automated actions will run these on new PRs, but to save frustration, remember to:
 
