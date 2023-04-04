@@ -3,7 +3,6 @@
 Inspired by a [recent CodeGolf](https://codegolf.stackexchange.com/questions/259453), I discovered that there's no Qat Solver crate for Rust.
 This is a WIP Rust Crate for working with [Qat](https://www.quinapalus.com/qat.html) word patterns.
 The project is still in the Proof-of-Concept phase; beware of bugs, unstable APIs, and poor performance.
-Contributions welcome.
 
 ## Qat
 
@@ -40,6 +39,21 @@ For the proof of concept, only English will be supported.
 | Find all words starting with `kn` that are also words written backwards | `kn* & <` | knar knit knob knot know knub knaps knits knots knuts | No |
 | Find all words of at least twelve letters not containing a reversed sub-word | `12-:! *<*` | drinkdriving flyingcircus gainstriving kicksywicksy offscourings quickthinking | No |
 | Find all words starting or ending with `b`, no initial segment of which is a word | `! >*. & (b* \| *b)` | b ab ba be ... bwana bwazi climb clomb droob dweeb hbomb jacob jelab kebab kebob scrab scrub squab squib thumb vocab aplomb bhagee bhajee ... | No |
+
+## Contributing
+
+Contributions are welcome.
+Unstable development is taking place on the `dev` branch, please base PRs off of it.
+Merging with main will be done for version bumps, the first bump is planned when all of the above expressions are supported.
+
+Automated actions will run these on new PRs, but to save frustration, remember to:
+
+```sh
+$ cargo check
+$ cargo test
+$ cargo format
+$ cargo clippy
+```
 
 ## License
 
