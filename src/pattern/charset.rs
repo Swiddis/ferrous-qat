@@ -1,5 +1,9 @@
-pub trait CharSet {
+pub const EN_VOWELS: u32 = 0x00104111;
+pub const EN_CONSONANTS: u32 = 0x03efbeee;
+
+pub trait CharSet<T> {
     fn new() -> Self;
+    fn from_mask(mask: T) -> Self;
     fn insert(&mut self, c: char);
     fn contains(&self, c: char) -> bool;
 }
@@ -15,9 +19,13 @@ impl EnCharSet {
     }
 }
 
-impl CharSet for EnCharSet {
+impl CharSet<u32> for EnCharSet {
     fn new() -> Self {
         Self { bits: 0 }
+    }
+
+    fn from_mask(mask: u32) -> Self {
+        Self { bits: mask }
     }
 
     fn insert(&mut self, c: char) {
