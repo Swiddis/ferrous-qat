@@ -9,6 +9,8 @@ enum Node {
     Char(char),
     Set(EnCharSet),
     NegSet(EnCharSet),
+    AnyVow,
+    AnyCon,
 }
 
 pub struct Pattern {
@@ -41,6 +43,8 @@ impl<'a, 'b> Pattern {
             match token {
                 Token::Letter(c) => nodes.push(Node::Char(*c)),
                 Token::AnyLetter => nodes.push(Node::Any),
+                Token::AnyVowel => nodes.push(Node::AnyVow),
+                Token::AnyConsonant => nodes.push(Node::AnyCon),
                 Token::BeginSet => nodes.push(Node::Set(Self::collect_set(&mut tokens)?)),
                 Token::BeginNegSet => nodes.push(Node::NegSet(Self::collect_set(&mut tokens)?)),
                 Token::EndSet => {
@@ -60,6 +64,14 @@ impl<'a, 'b> Pattern {
             Node::Char(c) => *c == w,
             Node::Set(s) => s.contains(w),
             Node::NegSet(s) => !s.contains(w),
+            Node::AnyVow => {
+                let vowels = EnCharSet::from_iter("aeiou".chars());
+                vowels.contains(w)
+            }
+            Node::AnyCon => {
+                let consonants = EnCharSet::from_iter("bcdfghjklmnpqrstvwxyz".chars());
+                consonants.contains(w)
+            }
         })
     }
 }
