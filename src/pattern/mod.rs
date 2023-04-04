@@ -1,7 +1,7 @@
 pub mod charset;
 pub mod parsing;
 
-use self::charset::{CharSet, EnCharSet};
+use self::charset::*;
 use self::parsing::{ParsingError, Token};
 
 #[derive(Debug)]
@@ -94,11 +94,11 @@ impl<'a, 'b> Pattern {
             Node::Set(s) => s.contains(w),
             Node::NegSet(s) => !s.contains(w),
             Node::AnyVow => {
-                let vowels = EnCharSet::from_iter("aeiou".chars());
+                let vowels = EnCharSet::from_mask(EN_VOWELS);
                 vowels.contains(w)
             }
             Node::AnyCon => {
-                let consonants = EnCharSet::from_iter("bcdfghjklmnpqrstvwxyz".chars());
+                let consonants = EnCharSet::from_mask(EN_CONSONANTS);
                 consonants.contains(w)
             }
         })
