@@ -4,6 +4,10 @@ Inspired by a [recent CodeGolf](https://codegolf.stackexchange.com/questions/259
 This is a WIP Rust Crate for working with [Qat](https://www.quinapalus.com/qat.html) word patterns.
 The project is still in the Proof-of-Concept phase; beware of bugs, unstable APIs, and poor performance.
 
+## Usage
+
+I've been a bit sloppy with the documentation, but you can get the basic gist by reading the `tests`.
+
 ## Qat
 
 Here are the supported operations of Qat expressions.
