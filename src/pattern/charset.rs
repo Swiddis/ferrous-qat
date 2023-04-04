@@ -1,3 +1,5 @@
+use core::fmt::Debug;
+
 pub trait CharSet {
     fn new() -> Self;
     fn insert(&mut self, c: char);
@@ -42,6 +44,20 @@ impl FromIterator<char> for EnCharSet {
             bits |= Self::as_bit(c);
         }
         Self { bits }
+    }
+}
+
+impl Debug for EnCharSet {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("EnCharSet")
+            .field("bits", &self.bits)
+            .field(
+                "_chars",
+                &('a'..='z')
+                    .filter(|c| self.contains(*c))
+                    .collect::<Vec<char>>(),
+            )
+            .finish()
     }
 }
 

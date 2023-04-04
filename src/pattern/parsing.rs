@@ -17,6 +17,7 @@ pub enum Token {
     EndSet,
     AnyVowel,
     AnyConsonant,
+    SetRange,
 }
 
 impl Token {
@@ -37,6 +38,7 @@ impl Token {
                 ']' => tokens.push(Self::EndSet),
                 '@' => tokens.push(Self::AnyVowel),
                 '#' => tokens.push(Self::AnyConsonant),
+                '-' => tokens.push(Self::SetRange),
                 _ => return Err(ParsingError::InvalidTokenError(curr)),
             }
         }

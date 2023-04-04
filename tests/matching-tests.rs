@@ -54,3 +54,14 @@ fn test_matches_consonants() {
         .collect();
     assert_eq!(result, vec!["wins", "worn"]);
 }
+
+#[test]
+fn test_set_range() {
+    let wordlist = ["lapaz", "parix", "other"];
+    let pattern = Pattern::new("[l-p].[m-r].[w-z]").unwrap();
+    let result: Vec<&str> = wordlist
+        .into_iter()
+        .filter(|w| pattern.matches(w))
+        .collect();
+    assert_eq!(result, vec!["lapaz", "parix"]);
+}
