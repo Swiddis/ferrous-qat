@@ -14,7 +14,7 @@ For the proof of concept, only English will be supported.
 |------|---------|---------|------------|
 | Complete a crossword entry | `l.......v` | leitmotiv lermontov | Yes |
 | Complete a crossword entry with alternatives | `..i[sz]e` | anise arise avise avize baize ... | Yes |
-| Match ranges of letters | `[l-p].[m-r].[w-z]` | lammy lanky lapaz lardy larky larry lenny limax ... | No |
+| Match ranges of letters | `[l-p].[m-r].[w-z]` | lammy lanky lapaz lardy larky larry lenny limax ... | Yes |
 | Match disallowing certain letters | `....i[!stz]e` | abusive acarine acquire adenine affaire airline airmile airside ... | Yes |
 | Match consonants and vowels | `#@#@#@#@#@#@#@` | pararosaniline recapitulative rehabilitative supererogative verisimilitude | Yes |
 | Find all words beginning with `xo` | `xo*` | xosa xoana xoanon | No |
