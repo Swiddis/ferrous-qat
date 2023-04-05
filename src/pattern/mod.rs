@@ -4,6 +4,7 @@ pub mod parsing;
 use self::charset::*;
 use self::parsing::{ParsingError, Token};
 
+#[derive(Debug)]
 enum Node {
     Any,
     Char(char),
@@ -13,6 +14,7 @@ enum Node {
     AnyCon,
 }
 
+#[derive(Debug)]
 pub struct Pattern {
     nodes: Vec<Node>,
 }
@@ -22,17 +24,41 @@ impl<'a, 'b> Pattern {
     where
         I: Iterator<Item = &'a Token>,
     {
+        use ParsingError::SyntaxError;
         let mut set = EnCharSet::new();
+        let (mut in_range, mut range_start) = (false, '\0');
         for token in tokens.by_ref() {
             match token {
-                Token::Letter(c) => set.insert(*c),
-                Token::EndSet => return Ok(set),
+                Token::Letter(c) => match (in_range, range_start) {
+                    (false, _) => {
+                        set.insert(*c);
+                        range_start = *c;
+                    }
+                    (true, '\0') => return Err(SyntaxError("set range with no start")),
+                    (true, start) => {
+                        for r in start..=*c {
+                            set.insert(r);
+                        }
+                        in_range = false;
+                        range_start = '\0';
+                    }
+                },
+                Token::EndSet => {
+                    return if in_range {
+                        Err(SyntaxError("set closed while in range"))
+                    } else {
+                        Ok(set)
+                    }
+                }
+                Token::SetRange => {
+                    in_range = true;
+                }
                 _ => {
-                    return Err(ParsingError::SyntaxError("illegal set element"));
+                    return Err(SyntaxError("illegal set element"));
                 }
             }
         }
-        Err(ParsingError::SyntaxError("set not closed"))
+        Err(SyntaxError("set not closed"))
     }
 
     pub fn new(source: &str) -> Result<Self, ParsingError> {
@@ -49,6 +75,9 @@ impl<'a, 'b> Pattern {
                 Token::BeginNegSet => nodes.push(Node::NegSet(Self::collect_set(&mut tokens)?)),
                 Token::EndSet => {
                     return Err(ParsingError::SyntaxError("closed set without open"));
+                }
+                Token::SetRange => {
+                    return Err(ParsingError::SyntaxError("set range not present in set"));
                 }
             }
         }

@@ -1,3 +1,5 @@
+use core::fmt::Debug;
+
 pub const EN_VOWELS: u32 = 0x00104111;
 pub const EN_CONSONANTS: u32 = 0x03efbeee;
 
@@ -50,6 +52,20 @@ impl FromIterator<char> for EnCharSet {
             bits |= Self::as_bit(c);
         }
         Self { bits }
+    }
+}
+
+impl Debug for EnCharSet {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("EnCharSet")
+            .field("bits", &self.bits)
+            .field(
+                "_chars",
+                &('a'..='z')
+                    .filter(|c| self.contains(*c))
+                    .collect::<Vec<char>>(),
+            )
+            .finish()
     }
 }
 
