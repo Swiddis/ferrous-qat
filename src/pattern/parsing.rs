@@ -1,5 +1,5 @@
-use thiserror::Error;
 use logos::Logos;
+use thiserror::Error;
 
 #[derive(Debug, Error, PartialEq)]
 pub enum ParsingError<'a> {
@@ -28,13 +28,13 @@ pub enum Token<'a> {
     #[regex("[a-z]-[a-z]")]
     SetRange(&'a str),
     #[error]
-    Error
+    Error,
 }
 
 #[cfg(test)]
 mod test {
-    use logos::Logos;
     use super::Token;
+    use logos::Logos;
 
     #[test]
     fn test_lexify_letters() {

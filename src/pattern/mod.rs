@@ -2,8 +2,8 @@ pub mod charset;
 pub mod parsing;
 
 use self::charset::*;
-use logos::Logos;
 use self::parsing::{ParsingError, Token};
+use logos::Logos;
 
 #[derive(Debug)]
 enum Node {
@@ -29,8 +29,10 @@ impl<'a, 'b> Pattern {
         let mut set = EnCharSet::new();
         for token in tokens.by_ref() {
             match token {
-                Token::Letters(c) => for c in c.chars() {
-                    set.insert(c);
+                Token::Letters(c) => {
+                    for c in c.chars() {
+                        set.insert(c);
+                    }
                 }
                 Token::EndSet => {
                     return Ok(set);
@@ -57,9 +59,11 @@ impl<'a, 'b> Pattern {
         let mut tokens = tokens.peekable();
         while let Some(token) = tokens.next() {
             match token {
-                Token::Letters(c) => for c in c.chars() {
-                    nodes.push(Node::Char(c));
-                },
+                Token::Letters(c) => {
+                    for c in c.chars() {
+                        nodes.push(Node::Char(c));
+                    }
+                }
                 Token::AnyLetter => nodes.push(Node::Any),
                 Token::AnyVowel => nodes.push(Node::AnyVow),
                 Token::AnyConsonant => nodes.push(Node::AnyCon),
