@@ -1,12 +1,14 @@
+pub mod charset;
 pub mod parsing;
 
-use crate::pattern::parsing::{ParsingError, Token};
+use self::charset::*;
+use self::parsing::{ParsingError, Token};
 
 enum Node {
     Any,
     Char(char),
-    Set(Vec<char>),
-    NegSet(Vec<char>),
+    Set(EnCharSet),
+    NegSet(EnCharSet),
     AnyVow,
     AnyCon,
 }
@@ -16,14 +18,14 @@ pub struct Pattern {
 }
 
 impl<'a, 'b> Pattern {
-    fn collect_set<I>(tokens: &mut I) -> Result<Vec<char>, ParsingError<'b>>
+    fn collect_set<I>(tokens: &mut I) -> Result<EnCharSet, ParsingError<'b>>
     where
         I: Iterator<Item = &'a Token>,
     {
-        let mut set = vec![];
+        let mut set = EnCharSet::new();
         for token in tokens.by_ref() {
             match token {
-                Token::Letter(c) => set.push(*c),
+                Token::Letter(c) => set.insert(*c),
                 Token::EndSet => return Ok(set),
                 _ => {
                     return Err(ParsingError::SyntaxError("illegal set element"));
@@ -60,19 +62,15 @@ impl<'a, 'b> Pattern {
         self.nodes.iter().zip(word.chars()).all(|(n, w)| match n {
             Node::Any => true,
             Node::Char(c) => *c == w,
-            Node::Set(s) => s.contains(&w),
-            Node::NegSet(s) => !s.contains(&w),
+            Node::Set(s) => s.contains(w),
+            Node::NegSet(s) => !s.contains(w),
             Node::AnyVow => {
-                let vowels = vec!['a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U'];
-                vowels.contains(&w)
+                let vowels = EnCharSet::from_mask(EN_VOWELS);
+                vowels.contains(w)
             }
             Node::AnyCon => {
-                let consonants = vec![
-                    'b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p', 'q', 'r', 's', 't',
-                    'v', 'w', 'x', 'y', 'z', 'B', 'C', 'D', 'F', 'G', 'H', 'J', 'J', 'L', 'M', 'N',
-                    'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'X', 'Y', 'Z',
-                ];
-                consonants.contains(&w)
+                let consonants = EnCharSet::from_mask(EN_CONSONANTS);
+                consonants.contains(w)
             }
         })
     }
