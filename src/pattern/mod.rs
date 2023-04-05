@@ -76,7 +76,7 @@ impl<'a, 'b> Pattern {
                     return Err(ParsingError::SyntaxError("set range not present in set"));
                 }
                 Token::Error => {
-                    return Err(ParsingError::InvalidTokenError('?'));
+                    return Err(ParsingError::InvalidTokenError());
                 }
             }
         }

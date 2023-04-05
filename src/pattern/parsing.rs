@@ -3,8 +3,8 @@ use thiserror::Error;
 
 #[derive(Debug, Error, PartialEq)]
 pub enum ParsingError<'a> {
-    #[error("invalid token: {0}")]
-    InvalidTokenError(char),
+    #[error("invalid token")]
+    InvalidTokenError(),
     #[error("syntax error: {0}")]
     SyntaxError(&'a str),
 }
