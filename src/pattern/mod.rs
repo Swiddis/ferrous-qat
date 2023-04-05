@@ -2,6 +2,7 @@ pub mod charset;
 pub mod parsing;
 
 use self::charset::*;
+use logos::Logos;
 use self::parsing::{ParsingError, Token};
 
 #[derive(Debug)]
@@ -22,36 +23,25 @@ pub struct Pattern {
 impl<'a, 'b> Pattern {
     fn collect_set<I>(tokens: &mut I) -> Result<EnCharSet, ParsingError<'b>>
     where
-        I: Iterator<Item = &'a Token>,
+        I: Iterator<Item = Token<'a>>,
     {
         use ParsingError::SyntaxError;
         let mut set = EnCharSet::new();
-        let (mut in_range, mut range_start) = (false, '\0');
         for token in tokens.by_ref() {
             match token {
-                Token::Letter(c) => match (in_range, range_start) {
-                    (false, _) => {
-                        set.insert(*c);
-                        range_start = *c;
-                    }
-                    (true, '\0') => return Err(SyntaxError("set range with no start")),
-                    (true, start) => {
-                        for r in start..=*c {
-                            set.insert(r);
-                        }
-                        in_range = false;
-                        range_start = '\0';
-                    }
-                },
-                Token::EndSet => {
-                    return if in_range {
-                        Err(SyntaxError("set closed while in range"))
-                    } else {
-                        Ok(set)
-                    }
+                Token::Letters(c) => for c in c.chars() {
+                    set.insert(c);
                 }
-                Token::SetRange => {
-                    in_range = true;
+                Token::EndSet => {
+                    return Ok(set);
+                }
+                Token::SetRange(r) => {
+                    let mut c = r.chars();
+                    // Length guaranteed to be 3
+                    let (c0, c1) = (c.next().unwrap(), c.last().unwrap());
+                    for c in c0..=c1 {
+                        set.insert(c);
+                    }
                 }
                 _ => {
                     return Err(SyntaxError("illegal set element"));
@@ -62,12 +52,14 @@ impl<'a, 'b> Pattern {
     }
 
     pub fn new(source: &str) -> Result<Self, ParsingError> {
-        let tokens = Token::lexify(source)?;
+        let tokens = Token::lexer(source);
         let mut nodes = Vec::new();
-        let mut tokens = tokens.iter().peekable();
+        let mut tokens = tokens.peekable();
         while let Some(token) = tokens.next() {
             match token {
-                Token::Letter(c) => nodes.push(Node::Char(*c)),
+                Token::Letters(c) => for c in c.chars() {
+                    nodes.push(Node::Char(c));
+                },
                 Token::AnyLetter => nodes.push(Node::Any),
                 Token::AnyVowel => nodes.push(Node::AnyVow),
                 Token::AnyConsonant => nodes.push(Node::AnyCon),
@@ -76,8 +68,11 @@ impl<'a, 'b> Pattern {
                 Token::EndSet => {
                     return Err(ParsingError::SyntaxError("closed set without open"));
                 }
-                Token::SetRange => {
+                Token::SetRange(_) => {
                     return Err(ParsingError::SyntaxError("set range not present in set"));
+                }
+                Token::Error => {
+                    return Err(ParsingError::InvalidTokenError('?'));
                 }
             }
         }
