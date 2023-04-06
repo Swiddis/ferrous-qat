@@ -1,0 +1,10 @@
+letter = { ASCII_ALPHA_LOWER }
+dot = { "." }
+consonant = { "#" }
+vowel = { "@" }
+
+set_range = { letter ~ "-" ~ letter }
+set = { "[" ~ (set_range | letter)+ ~ "]" }
+negset = { "[!" ~ (set_range | letter)+ ~ "]" }
+
+pattern = { (letter | dot | consonant | vowel | set | negset)+ }
