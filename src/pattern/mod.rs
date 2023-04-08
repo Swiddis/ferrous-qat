@@ -29,8 +29,8 @@ impl Pattern {
             Rule::letter => set.insert(p.as_str().chars().next().unwrap()),
             Rule::set_range => {
                 let mut chars = p.as_str().chars();
-                let left = chars.next().unwrap();
-                let right = chars.nth(1).unwrap();
+                let left = chars.next().expect("could not parse set range");
+                let right = chars.nth(1).expect("could not parse set range");
                 for c in left..=right {
                     set.insert(c);
                 }
