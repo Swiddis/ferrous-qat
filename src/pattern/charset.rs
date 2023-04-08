@@ -1,7 +1,7 @@
 use core::fmt::Debug;
 
-pub const EN_VOWELS: u32 = 0x00104111;
-pub const EN_CONSONANTS: u32 = 0x03efbeee;
+pub const EN_VOWELS: EnCharSet = EnCharSet { bits: 0x00104111 };
+pub const EN_CONSONANTS: EnCharSet = EnCharSet { bits: 0x03efbeee };
 
 pub trait CharSet<T> {
     fn new() -> Self;
