@@ -2,7 +2,7 @@ pub mod charset;
 
 use pest::iterators::Pair;
 
-use self::charset::{CharSet, EN_CONSONANTS, EN_VOWELS, EnCharSet};
+use self::charset::{CharSet, EnCharSet, EN_CONSONANTS, EN_VOWELS};
 use crate::pest::{error::Error, Parser};
 
 use super::parsing::{QatParser, Rule};
@@ -34,7 +34,7 @@ impl Pattern {
                 for c in left..=right {
                     set.insert(c);
                 }
-            },
+            }
             r => panic!("invalid set contents {:?}", r),
         });
         set
