@@ -30,7 +30,7 @@ impl Pattern {
             Rule::set_range => {
                 let mut chars = p.as_str().chars();
                 let left = chars.next().unwrap();
-                let right = chars.skip(1).next().unwrap();
+                let right = chars.nth(1).unwrap();
                 for c in left..=right {
                     set.insert(c);
                 }
@@ -40,7 +40,7 @@ impl Pattern {
         set
     }
 
-    pub fn new(source: &str) -> Result<Self, Error<Rule>> {
+    pub fn new(source: &str) -> Result<Self, Box<Error<Rule>>> {
         let tree = QatParser::parse(Rule::pattern, source)?.next().unwrap();
         let nodes = tree
             .into_inner()
