@@ -1,13 +1,14 @@
 use core::fmt::Debug;
 
-pub const EN_VOWELS: EnCharSet = EnCharSet { bits: 0x00104111 };
-pub const EN_CONSONANTS: EnCharSet = EnCharSet { bits: 0x03efbeee };
-
 pub trait CharSet<T> {
     fn new() -> Self;
+    fn any() -> Self;
+    fn vowels() -> Self;
+    fn consonants() -> Self;
     fn from_mask(mask: T) -> Self;
     fn insert(&mut self, c: char);
     fn contains(&self, c: char) -> bool;
+    fn negate(&self) -> Self;
 }
 
 pub struct EnCharSet {
@@ -26,6 +27,18 @@ impl CharSet<u32> for EnCharSet {
         Self { bits: 0 }
     }
 
+    fn any() -> Self {
+        Self { bits: u32::MAX }
+    }
+
+    fn vowels() -> Self {
+        Self { bits: 0x00104111 }
+    }
+
+    fn consonants() -> Self {
+        Self { bits: 0x03efbeee }
+    }
+
     fn from_mask(mask: u32) -> Self {
         Self { bits: mask }
     }
@@ -39,6 +52,10 @@ impl CharSet<u32> for EnCharSet {
             return false;
         }
         Self::as_bit(c) & self.bits > 0
+    }
+
+    fn negate(&self) -> Self {
+        Self { bits: !self.bits }
     }
 }
 
