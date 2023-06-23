@@ -1,14 +1,36 @@
 use wordqat::pattern::Pattern;
+use proptest::prelude::*;
 
-#[test]
-fn test_matches_crossword() {
-    let wordlist = ["lone", "love", "word", "door", "dome", "lint", "leftie"];
-    let pattern = Pattern::new("l..e").unwrap();
-    let result: Vec<&str> = wordlist
-        .into_iter()
-        .filter(|w| pattern.matches(w))
-        .collect();
-    assert_eq!(result, vec!["lone", "love"]);
+proptest! {
+    #[test]
+    fn test_matches_fixed(s in "[a-z]+") {
+        let pattern = Pattern::new(s.as_str()).unwrap();
+        assert_eq!(pattern.matches(s.as_str()), true);
+    }
+
+    #[test]
+    fn test_matches_empty(s in "[a-z]*") {
+        let pattern = Pattern::new("").unwrap();
+        assert_eq!(pattern.matches(s.as_str()), s.as_str() == "");
+    }
+
+    #[test]
+    fn test_matches_crossword_positive(s in "l[a-z]{2}e") {
+        let pattern = Pattern::new("l..e").unwrap();
+        assert_eq!(pattern.matches(s.as_str()), true);
+    }
+
+    #[test]
+    fn test_not_matches_crossword_wrong_letters(s in "([^l][a-z]{3}|[a-z]{3}[^e])") {
+        let pattern = Pattern::new("l..e").unwrap();
+        assert_eq!(pattern.matches(s.as_str()), false);
+    }
+
+    #[test]
+    fn test_not_matches_crossword_wrong_length(s in "([a-z]{0,3}|[a-z]{4,})") {
+        let pattern = Pattern::new("l..e").unwrap();
+        assert_eq!(pattern.matches(s.as_str()), false);
+    }
 }
 
 #[test]
