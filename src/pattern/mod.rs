@@ -1,7 +1,10 @@
 pub mod automata;
 pub mod charset;
 
-use self::{automata::PatternNode, charset::{CharSet, EnCharSet}};
+use self::{
+    automata::PatternNode,
+    charset::{CharSet, EnCharSet},
+};
 use crate::pest::{error::Error, Parser};
 
 use super::parsing::{QatParser, Rule};
@@ -17,7 +20,13 @@ impl Pattern {
         let node = PatternNode::new(tree.into_inner());
         match node {
             Some(n) => Ok(Self { node: n }),
-            None => Ok(Self { node: PatternNode { matches: EnCharSet::new(), out: vec![], is_terminal: true }})
+            None => Ok(Self {
+                node: PatternNode {
+                    matches: EnCharSet::new(),
+                    out: vec![],
+                    is_terminal: true,
+                },
+            }),
         }
     }
 
