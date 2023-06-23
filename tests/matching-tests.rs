@@ -1,5 +1,5 @@
-use wordqat::pattern::Pattern;
 use proptest::prelude::*;
+use wordqat::pattern::Pattern;
 
 proptest! {
     #[test]
