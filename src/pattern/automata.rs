@@ -8,6 +8,7 @@ use super::charset::{CharSet, EnCharSet};
 pub struct PatternNode {
     pub matches: EnCharSet,
     pub out: Vec<Box<PatternNode>>,
+    pub is_terminal: bool,
 }
 
 impl PatternNode {
@@ -44,26 +45,30 @@ impl PatternNode {
             None => Some(Self {
                 matches,
                 out: vec![],
+                is_terminal: true,
             }),
             Some(anode) => Some(Self {
                 matches,
                 out: vec![Box::new(anode)],
+                is_terminal: false,
             }),
         }
     }
 
     pub fn test(&self, word: &str, idx: usize) -> bool {
-        if idx >= word.len() {
-            return true;
+        if idx + 1 >= word.len() {
+            if idx == word.len() {
+                return self.is_terminal;
+            }
+            return self.is_terminal && self.matches.contains(word.chars().nth(idx).unwrap());
         }
         // TODO terrible indexing method for now, fix later
         if !self.matches.contains(word.chars().nth(idx).unwrap()) {
             return false;
         }
-        if self.out.is_empty() {
-            word.len() == idx + 1
-        } else {
-            self.out.iter().any(|n| n.test(word, idx + 1))
+        if self.is_terminal && idx + 1 == word.len() {
+            return true;
         }
+        self.out.iter().any(|n| n.test(word, idx + 1))
     }
 }

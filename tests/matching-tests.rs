@@ -27,7 +27,7 @@ proptest! {
     }
 
     #[test]
-    fn test_not_matches_crossword_wrong_length(s in "([a-z]{0,3}|[a-z]{4,})") {
+    fn test_not_matches_crossword_wrong_length(s in "([a-z]{0,3}|[a-z]{5,})") {
         let pattern = Pattern::new("l..e").unwrap();
         assert_eq!(pattern.matches(s.as_str()), false);
     }
