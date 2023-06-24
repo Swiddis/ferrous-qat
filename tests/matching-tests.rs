@@ -9,33 +9,37 @@ proptest! {
     }
 
     #[test]
-    fn test_matches_fixed(s in "[a-z]+") {
+    fn test_not_matches_non_unicode(s in "[^a-z]") {
+        let pattern = Pattern::new(".").unwrap();
+        assert_eq!(pattern.matches(s.as_str()), false);
+    }
+
+    #[test]
+    fn test_matches_fixed(s in "[a-z]*") {
         let pattern = Pattern::new(s.as_str()).unwrap();
         assert_eq!(pattern.matches(s.as_str()), true);
     }
 
     #[test]
-    fn test_matches_empty(s in "[a-z]*") {
-        let pattern = Pattern::new("").unwrap();
-        assert_eq!(pattern.matches(s.as_str()), s.as_str() == "");
+    fn test_matches_crossword_positive(a in "[a-z]*", b in "[a-z]", c in "[a-z]*") {
+        let pattern = ".".repeat(a.len()) + &b + &".".repeat(c.len());
+        let pattern = Pattern::new(&pattern).unwrap();
+        assert_eq!(pattern.matches(&(a + &b + &c)), true);
     }
 
     #[test]
-    fn test_matches_crossword_positive(s in "l[a-z]{2}e") {
-        let pattern = Pattern::new("l..e").unwrap();
-        assert_eq!(pattern.matches(s.as_str()), true);
+    fn test_not_matches_crossword_wrong_letters(a in "[a-z]", b in "[a-z]", c in "[a-z]*", d in "[a-z]*") {
+        prop_assume!(a != b);
+        let pattern = ".".repeat(c.len()) + &a + &".".repeat(d.len());
+        let pattern = Pattern::new(&pattern).unwrap();
+        assert_eq!(pattern.matches(&(c + &b + &d)), false);
     }
 
     #[test]
-    fn test_not_matches_crossword_wrong_letters(s in "([^l][a-z]{3}|[a-z]{3}[^e])") {
-        let pattern = Pattern::new("l..e").unwrap();
-        assert_eq!(pattern.matches(s.as_str()), false);
-    }
-
-    #[test]
-    fn test_not_matches_crossword_wrong_length(s in "([a-z]{0,3}|[a-z]{5,})") {
-        let pattern = Pattern::new("l..e").unwrap();
-        assert_eq!(pattern.matches(s.as_str()), false);
+    fn test_not_matches_crossword_wrong_length(a in "[\\.a-z]*", b in "[a-z]*") {
+        prop_assume!(a.len() != b.len());
+        let pattern = Pattern::new(&a).unwrap();
+        assert_eq!(pattern.matches(&b), false);
     }
 
     #[test]
