@@ -9,7 +9,7 @@ proptest! {
     }
 
     #[test]
-    fn test_not_matches_non_unicode(s in "[^a-z]") {
+    fn test_not_matches_non_letters(s in "[^a-z]") {
         let pattern = Pattern::new(".").unwrap();
         assert_eq!(pattern.matches(s.as_str()), false);
     }
