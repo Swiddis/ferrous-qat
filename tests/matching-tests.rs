@@ -1,4 +1,4 @@
-use wordqat::pattern::Pattern;
+use wordqat::Pattern;
 
 #[test]
 fn test_matches_crossword() {
@@ -6,7 +6,7 @@ fn test_matches_crossword() {
     let pattern = Pattern::new("l..e").unwrap();
     let result: Vec<&str> = wordlist
         .into_iter()
-        .filter(|w| pattern.matches(w))
+        .filter(|w| pattern.is_match(w))
         .collect();
     assert_eq!(result, vec!["lone", "love"])
 }
@@ -17,7 +17,7 @@ fn test_matches_set() {
     let pattern = Pattern::new("..i[sz]e").unwrap();
     let result: Vec<&str> = wordlist
         .into_iter()
-        .filter(|w| pattern.matches(w))
+        .filter(|w| pattern.is_match(w))
         .collect();
     assert_eq!(result, vec!["anise", "avize"])
 }
@@ -28,7 +28,7 @@ fn test_matches_negset() {
     let pattern = Pattern::new("..i[!sz]e").unwrap();
     let result: Vec<&str> = wordlist
         .into_iter()
-        .filter(|w| pattern.matches(w))
+        .filter(|w| pattern.is_match(w))
         .collect();
     assert_eq!(result, vec!["alice", "taire"]);
 }

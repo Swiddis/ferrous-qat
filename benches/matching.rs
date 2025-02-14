@@ -1,5 +1,5 @@
 use criterion::*;
-use wordqat::pattern::Pattern;
+use wordqat::Pattern;
 
 fn basic_dot_benchmark(c: &mut Criterion) {
     let wordlist = ["lone", "love", "word", "door", "dome", "lint", "leftie"];
@@ -7,7 +7,7 @@ fn basic_dot_benchmark(c: &mut Criterion) {
     let mut i = 0;
     c.bench_function("dot-1", |b| {
         b.iter(|| {
-            black_box(pattern.matches(wordlist[i]));
+            black_box(pattern.is_match(wordlist[i]));
             i = (i + 1) % wordlist.len();
         })
     });
@@ -19,7 +19,7 @@ fn basic_set_benchmark(c: &mut Criterion) {
     let mut i = 0;
     c.bench_function("set-1", |b| {
         b.iter(|| {
-            black_box(pattern.matches(wordlist[i]));
+            black_box(pattern.is_match(wordlist[i]));
             i = (i + 1) % wordlist.len();
         })
     });
