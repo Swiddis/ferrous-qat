@@ -1,13 +1,20 @@
-use std::error::Error;
+mod parse;
+mod pattern;
 
-pub struct Pattern {}
+pub use pattern::SimplePattern;
 
-impl Pattern {
-    pub fn new(_qat: &str) -> Result<Self, Box<dyn Error>> {
-        unimplemented!()
-    }
+impl TryFrom<&str> for SimplePattern {
+    type Error = String;
 
-    pub fn is_match(&self, _haystack: &str) -> bool {
-        unimplemented!()
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        let (rem, pattern) = parse::simple_pattern(value).unwrap();
+        if rem.is_empty() {
+            Ok(pattern)
+        } else {
+            Err(format!(
+                "unrecognized character {}",
+                rem.chars().next().unwrap()
+            ))
+        }
     }
 }

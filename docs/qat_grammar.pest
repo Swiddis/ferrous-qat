@@ -1,0 +1,46 @@
+// Pest parsing expression grammar: https://pest.rs/
+//
+// Not actually using Pest because I wanted to mess with parser combinators,
+// but I like their PEG format and their site is great for prototyping.
+
+// Primitive sequence operations
+letter = { ASCII_ALPHA_LOWER }
+copy_letter = { ASCII_DIGIT }
+any_letter = { "." }
+vowel = { "@" }
+consonant = { "#" }
+wildcard = { "*" }
+word = { ">" }
+rev_word = { "<" }
+
+// Letter sets
+set_negation = { "!" }
+set_range = { letter ~ "-" ~ letter }
+set = { "[" ~ set_negation? ~ (set_range | letter)* ~ "]" }
+
+// Simple patterns
+element = { letter | copy_letter | any_letter | vowel | consonant | wildcard | word | rev_word | set | "(" ~ pattern ~ ")" }
+sequence = { element* }
+slash_sequence = { "/" ~ element* }
+simple_pattern = { slash_sequence | (sequence ~ slash_sequence?) }
+
+// Compound Patterns
+reversed = { "~" ~ " "* ~ unary }
+negated = { "!" ~ " "* ~ unary }
+unary = _{ reversed | negated | simple_pattern }
+
+all = { unary ~ (" "* ~ "&" ~ " "* ~ unary)* }
+any = { all ~ (" "* ~ "|" ~ " "* ~ all)* }
+pattern = _{ any }
+
+// Qualified patterns
+misprint = { "`" }
+maybe_misprint = { "?`" }
+
+number = { ASCII_DIGIT+ }
+length_is = { number ~ ":" }
+length_at_least = { number ~ "-:" }
+length_at_most = { "-" ~ number ~ ":" }
+length_between = { number ~ "-" ~ number ~ ":" }
+
+qualified_pattern = { (misprint | maybe_misprint)? ~ (length_is | length_at_least | length_at_most | length_between)? ~ pattern }
