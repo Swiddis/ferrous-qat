@@ -60,28 +60,30 @@ fn split_ex(part: ExpressionPart) -> (String, String) {
             pattern.push_str(&serialize_runs(runs));
             pattern.push(']');
             (pattern, c.to_string())
-        },
+        }
         ExpressionPart::NegSet(c, bitset) => {
             let runs = bitset_as_runs(bitset & !as_bit(c));
             let mut pattern = String::from("[!");
             pattern.push_str(&serialize_runs(runs));
             pattern.push(']');
             (pattern, c.to_string())
-        },
+        }
     }
 }
 
-fn expression_part_strategy() -> impl Strategy<Value = ExpressionPart> {
+fn expression_parts() -> impl Strategy<Value = ExpressionPart> {
     prop_oneof![
         prop::char::range('a', 'z').prop_map(ExpressionPart::Letter),
         prop::char::range('a', 'z').prop_map(ExpressionPart::Dot),
-        (prop::char::range('a', 'z'), prop::bits::u32::ANY).prop_map(|(a, b)| ExpressionPart::Set(a, b)),
-        (prop::char::range('a', 'z'), prop::bits::u32::ANY).prop_map(|(a, b)| ExpressionPart::NegSet(a, b)),
+        (prop::char::range('a', 'z'), prop::bits::u32::ANY)
+            .prop_map(|(a, b)| ExpressionPart::Set(a, b)),
+        (prop::char::range('a', 'z'), prop::bits::u32::ANY)
+            .prop_map(|(a, b)| ExpressionPart::NegSet(a, b)),
     ]
 }
 
-fn expression_strategy() -> impl Strategy<Value = (String, String)> {
-    proptest::collection::vec(expression_part_strategy(), 0..32).prop_map(|vec| {
+fn expressions() -> impl Strategy<Value = (String, String)> {
+    proptest::collection::vec(expression_parts(), 0..32).prop_map(|vec| {
         let (mut ex, mut word) = (String::new(), String::new());
         for part in vec {
             let (exs, words) = split_ex(part);
@@ -99,7 +101,7 @@ proptest! {
     }
 
     #[test]
-    fn test_matches_simple_expression((ex, word) in expression_strategy()) {
+    fn test_matches_simple_expression((ex, word) in expressions()) {
         let pattern = SimplePattern::try_from(ex.as_str()).unwrap();
         prop_assert!(pattern.is_match(&word));
     }
