@@ -36,7 +36,7 @@ fn set_range(input: &str) -> IResult<&str, LetterSet> {
 fn set(input: &str) -> IResult<&str, Element> {
     let (rem, (negation, subsets)) = delimited(
         char('['),
-        (opt(char('!')), many0(alt((set_letter, set_range)))),
+        (opt(char('!')), many0(alt((set_range, set_letter)))),
         char(']'),
     )
     .parse(input)?;

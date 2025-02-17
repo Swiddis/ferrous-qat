@@ -12,7 +12,7 @@ impl TryFrom<&str> for SimplePattern {
             Ok(pattern)
         } else {
             Err(format!(
-                "unrecognized character {}",
+                "failed to parse pattern from unrecognized character {}",
                 rem.chars().next().unwrap()
             ))
         }
