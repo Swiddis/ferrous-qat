@@ -1,7 +1,9 @@
 mod parse;
 mod pattern;
+mod index;
 
 pub use pattern::SimplePattern;
+pub use index::Index;
 use nom::{combinator::all_consuming, Parser};
 
 impl TryFrom<&str> for SimplePattern {
