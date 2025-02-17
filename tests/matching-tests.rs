@@ -10,6 +10,67 @@ enum ExpressionPart {
     NegSet(char, u32),
 }
 
+fn as_bit(letter: char) -> u32 {
+    1 << (letter as u32 - 'a' as u32)
+}
+
+fn bitset_as_runs(bitset: u32) -> Vec<Vec<char>> {
+    let mut runs = Vec::new();
+    let mut matches = 0;
+
+    for c in 'a'..='z' {
+        if bitset & as_bit(c) > 0 {
+            if matches == 0 {
+                runs.push(vec![c]);
+            } else {
+                runs.last_mut().unwrap().push(c);
+            }
+            matches += 1;
+        } else {
+            matches = 0;
+        }
+    }
+
+    runs
+}
+
+fn serialize_runs(runs: Vec<Vec<char>>) -> String {
+    let mut result = String::new();
+    for run in runs {
+        if run.len() > 2 {
+            result.push(*run.first().unwrap());
+            result.push('-');
+            result.push(*run.last().unwrap());
+        } else {
+            for c in run {
+                result.push(c);
+            }
+        }
+    }
+    result
+}
+
+fn split_ex(part: ExpressionPart) -> (String, String) {
+    match part {
+        ExpressionPart::Letter(c) => (c.to_string(), c.to_string()),
+        ExpressionPart::Dot(c) => (".".to_string(), c.to_string()),
+        ExpressionPart::Set(c, bitset) => {
+            let runs = bitset_as_runs(bitset | as_bit(c));
+            let mut pattern = String::from('[');
+            pattern.push_str(&serialize_runs(runs));
+            pattern.push(']');
+            (pattern, c.to_string())
+        },
+        ExpressionPart::NegSet(c, bitset) => {
+            let runs = bitset_as_runs(bitset & !as_bit(c));
+            let mut pattern = String::from("[!");
+            pattern.push_str(&serialize_runs(runs));
+            pattern.push(']');
+            (pattern, c.to_string())
+        },
+    }
+}
+
 fn expression_part_strategy() -> impl Strategy<Value = ExpressionPart> {
     prop_oneof![
         prop::char::range('a', 'z').prop_map(ExpressionPart::Letter),
@@ -19,31 +80,16 @@ fn expression_part_strategy() -> impl Strategy<Value = ExpressionPart> {
     ]
 }
 
-fn split_ex(part: ExpressionPart) -> (String, String) {
-    match part {
-        ExpressionPart::Letter(c) => (c.to_string(), c.to_string()),
-        ExpressionPart::Dot(c) => (".".to_string(), c.to_string()),
-        ExpressionPart::Set(c, m) => {
-            let mut pattern = String::from('[');
-            for l in 'a'..='z' {
-                if (1 << (l as u32 - 'a' as u32) & m) > 0 || l == c {
-                    pattern.push(l);
-                }
-            }
-            pattern.push(']');
-            (pattern, c.to_string())
-        },
-        ExpressionPart::NegSet(c, m) => {
-            let mut pattern = String::from("[!");
-            for l in 'a'..='z' {
-                if (1 << (l as u32 - 'a' as u32) & m) == 0 && l != c {
-                    pattern.push(l);
-                }
-            }
-            pattern.push(']');
-            (pattern, c.to_string())
-        },
-    }
+fn expression_strategy() -> impl Strategy<Value = (String, String)> {
+    proptest::collection::vec(expression_part_strategy(), 0..32).prop_map(|vec| {
+        let (mut ex, mut word) = (String::new(), String::new());
+        for part in vec {
+            let (exs, words) = split_ex(part);
+            ex.push_str(&exs);
+            word.push_str(&words);
+        }
+        (ex, word)
+    })
 }
 
 proptest! {
@@ -53,15 +99,7 @@ proptest! {
     }
 
     #[test]
-    fn test_matches_simple_expression(ex_parts in proptest::collection::vec(expression_part_strategy(), 0..50)) {
-        let (mut ex, mut word) = (String::new(), String::new());
-        for part in ex_parts {
-            let (exs, words) = split_ex(part);
-            ex.push_str(&exs);
-            word.push_str(&words);
-        }
-        dbg!(&ex, &word);
-
+    fn test_matches_simple_expression((ex, word) in expression_strategy()) {
         let pattern = SimplePattern::try_from(ex.as_str()).unwrap();
         prop_assert!(pattern.is_match(&word));
     }
