@@ -56,17 +56,11 @@ fn split_ex(part: ExpressionPart) -> (String, String) {
         ExpressionPart::Dot(c) => (".".to_string(), c.to_string()),
         ExpressionPart::Set(c, bitset) => {
             let runs = bitset_as_runs(bitset | as_bit(c));
-            let mut pattern = String::from('[');
-            pattern.push_str(&serialize_runs(runs));
-            pattern.push(']');
-            (pattern, c.to_string())
+            (format!("[{}]", serialize_runs(runs)), c.to_string())
         }
         ExpressionPart::NegSet(c, bitset) => {
             let runs = bitset_as_runs(bitset & !as_bit(c));
-            let mut pattern = String::from("[!");
-            pattern.push_str(&serialize_runs(runs));
-            pattern.push(']');
-            (pattern, c.to_string())
+            (format!("[!{}]", serialize_runs(runs)), c.to_string())
         }
     }
 }
