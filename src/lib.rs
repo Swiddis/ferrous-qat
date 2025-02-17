@@ -2,19 +2,15 @@ mod parse;
 mod pattern;
 
 pub use pattern::SimplePattern;
+use nom::{combinator::all_consuming, Parser};
 
 impl TryFrom<&str> for SimplePattern {
     type Error = String;
 
     fn try_from(value: &str) -> Result<Self, Self::Error> {
-        let (rem, pattern) = parse::simple_pattern(value).unwrap();
-        if rem.is_empty() {
-            Ok(pattern)
-        } else {
-            Err(format!(
-                "failed to parse pattern from unrecognized character {}",
-                rem.chars().next().unwrap()
-            ))
+        match all_consuming(parse::simple_pattern).parse(value) {
+            Ok((_, pattern)) => Ok(pattern),
+            Err(e) => Err(e.to_string()),
         }
     }
 }
